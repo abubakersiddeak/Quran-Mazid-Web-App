@@ -2,15 +2,15 @@ import React from "react";
 
 export default function SurahListSidebar() {
   return (
-    <section className="w-80 border-r border-gray-800 flex flex-col bg-[#0f0f0f] hidden lg:flex">
+    <section className="w-80 border-r border-border flex flex-col md:hidden lg:flex bg-background">
       <div className="p-4 flex gap-2">
-        <button className="flex-1 bg-[#1a1a1a] py-2 rounded text-sm font-medium border border-gray-700">
+        <button className="flex-1 bg-primary py-2 rounded text-sm font-medium text-primary-foreground border border-border">
           Surah
         </button>
-        <button className="flex-1 py-2 rounded text-sm font-medium text-gray-500">
+        <button className="flex-1 py-2 rounded text-sm font-medium text-muted-foreground">
           Juz
         </button>
-        <button className="flex-1 py-2 rounded text-sm font-medium text-gray-500">
+        <button className="flex-1 py-2 rounded text-sm font-medium text-muted-foreground">
           Page
         </button>
       </div>
@@ -23,20 +23,20 @@ export default function SurahListSidebar() {
         ].map((item) => (
           <div
             key={item.id}
-            className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${item.active ? "bg-green-600/10 border border-green-600/30" : "hover:bg-[#1a1a1a]"}`}
+            className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${item.active ? "bg-accent border border-primary/30" : "hover:bg-muted"}`}
           >
             <div
-              className={`w-10 h-10 rounded-md flex items-center justify-center text-sm font-bold mr-4 ${item.active ? "bg-green-600 text-white" : "bg-gray-800 text-gray-400"}`}
+              className={`w-10 h-10 rounded-md flex items-center justify-center text-sm font-bold mr-4 ${item.active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
             >
               {item.id}
             </div>
             <div>
               <h3
-                className={`text-sm font-semibold ${item.active ? "text-white" : "text-gray-300"}`}
+                className={`text-sm font-semibold ${item.active ? "text-foreground" : "text-muted-foreground"}`}
               >
                 {item.name}
               </h3>
-              <p className="text-[11px] text-gray-500">{item.sub}</p>
+              <p className="text-[11px] text-muted-foreground">{item.sub}</p>
             </div>
           </div>
         ))}

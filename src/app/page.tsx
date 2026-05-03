@@ -5,7 +5,7 @@ import SurahListSidebar from "./components/share/SurahListSidebar";
 import Main from "./components/Main";
 export default function Home() {
   return (
-    <div className="flex h-screen bg-[#0b0b0b] text-gray-300 font-sans">
+    <div className="flex h-screen text-foreground font-sans bg-background">
       <LeftSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
