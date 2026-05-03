@@ -1,8 +1,30 @@
-import React from "react";
+"use client";
+import { SurahListSidebarProps } from "@/types/Interface";
+import clsx from "clsx";
+import React, { useEffect, useState } from "react";
 
-export default function SurahListSidebar() {
+export default function SurahListSidebar({
+  openSurahList,
+}: SurahListSidebarProps) {
+  const [allSurahData, setAllSurahData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchAllSurah = async () => {
+      const response = await fetch(`https://api.alquran.cloud/v1/surah`);
+      const json = await response.json();
+
+      setAllSurahData(json.data);
+    };
+    fetchAllSurah();
+  }, []);
+  console.log(allSurahData);
   return (
-    <section className="w-80 border-r border-border flex flex-col md:hidden lg:flex bg-background">
+    <section
+      className={clsx(
+        "w-full lg:w-80 border-r  border-border flex flex-col md:hidden lg:flex bg-background",
+        openSurahList ? " " : " hidden",
+      )}
+    >
       <div className="p-4 flex gap-2">
         <button className="flex-1 bg-primary py-2 rounded text-sm font-medium text-primary-foreground border border-border">
           Surah
@@ -15,28 +37,25 @@ export default function SurahListSidebar() {
         </button>
       </div>
       <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-4 flex flex-col gap-2">
-        {[
-          { id: 1, name: "Al Fatihah", sub: "The Opener" },
-          { id: 2, name: "Al Baqarah", sub: "The Cow", active: true },
-          { id: 3, name: "Al Imran", sub: "Family of Imran" },
-          { id: 4, name: "An Nisa", sub: "The Women" },
-        ].map((item) => (
+        {allSurahData.map((surah, index) => (
           <div
-            key={item.id}
-            className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${item.active ? "bg-accent border border-primary/30" : "hover:bg-muted"}`}
+            key={index}
+            className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${surah.active ? "bg-accent border border-primary/30" : "hover:bg-muted"}`}
           >
             <div
-              className={`w-10 h-10 rounded-md flex items-center justify-center text-sm font-bold mr-4 ${item.active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+              className={`w-10 h-10 rounded-md flex items-center justify-center text-sm font-bold mr-4 ${surah.active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
             >
-              {item.id}
+              {surah.number}
             </div>
             <div>
               <h3
-                className={`text-sm font-semibold ${item.active ? "text-foreground" : "text-muted-foreground"}`}
+                className={`text-sm font-semibold ${surah.active ? "text-foreground" : "text-muted-foreground"}`}
               >
-                {item.name}
+                {surah.englishName}
               </h3>
-              <p className="text-[11px] text-muted-foreground">{item.sub}</p>
+              <p className="text-[11px] text-muted-foreground">
+                {surah.englishName}
+              </p>
             </div>
           </div>
         ))}

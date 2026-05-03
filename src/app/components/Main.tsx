@@ -1,19 +1,28 @@
 import { Bookmark, MoreHorizontal, Play } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 export default function Main() {
   return (
-    <main className="flex-1 overflow-y-auto  p-6 lg:p-10 custom-scrollbar">
+    <main className="flex-1 overflow-y-auto   p-6 lg:p-10 custom-scrollbar">
       <div className="max-w-4xl mx-auto">
         {/* Surah Header Card */}
-        <div className=" rounded-xl p-8 mb-10 flex flex-col items-center text-center border border-border relative overflow-hidden bg-card">
-          <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
-          <h2 className="text-3xl font-bold text-card-foreground mb-2">
-            Surah Al Baqarah
-          </h2>
-          <p className="text-muted-foreground text-sm mb-6">
-            Ayah-286, Madinah
-          </p>
+        <div className="  mb-10 grid grid-cols-3 justify-between items-center text-center  relative overflow-hidden ">
+          <Image
+            src={"/mosque_89014.png"}
+            alt="madina iamge"
+            height={100}
+            width={100}
+          />
+          <div>
+            <h2 className="text-3xl font-bold text-card-foreground mb-2">
+              Surah Al Baqarah
+            </h2>
+            <p className="text-muted-foreground text-sm mb-6">
+              Ayah-286, Madinah
+            </p>
+          </div>
+
           <div className="text-4xl text-primary mb-2">﷽</div>
         </div>
 

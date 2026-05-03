@@ -1,6 +1,7 @@
 "use client";
-import { Heart, Search, Settings, LucideIcon } from "lucide-react";
+import { Heart, Search, Settings, LucideIcon, Menu } from "lucide-react";
 import { ModeToggle } from "../ModeToggle";
+import { ChildComponentProps } from "@/types/Interface";
 
 const IconButton = ({
   Icon,
@@ -28,7 +29,7 @@ const IconButton = ({
   </div>
 );
 
-export default function Header() {
+export default function Header({ handleBurgarClick }: ChildComponentProps) {
   const handleSearch = () => alert("Search Clicked");
 
   const handleSettings = () => console.log("Settings Opened");
@@ -39,17 +40,20 @@ export default function Header() {
   ];
   return (
     <header className="flex h-16 items-center justify-between border-b border-border px-6 bg-background">
-      <div>
+      <div className="flex md:block gap-2 justify-center items-center">
+        <button onClick={handleBurgarClick} className=" md:hidden">
+          <Menu />
+        </button>
         <h1 className="text-xl font-bold text-foreground tracking-tight">
           Quran Mazid
         </h1>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="text-[10px] hidden md:block uppercase tracking-[0.2em] text-muted-foreground">
           Read, Study, and Learn The Quran
         </p>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="hidden items-center gap-3 sm:flex">
+      <div className="flex items-center justify-center gap-3">
+        <div className=" items-center justify-center gap-3 flex ">
           {NAV_ITEMS.map((item) => (
             <IconButton
               key={item.label}
@@ -58,11 +62,12 @@ export default function Header() {
               onClick={item.action}
             />
           ))}
+          <ModeToggle />
         </div>
-        <ModeToggle />
+
         <button
           onClick={() => alert("Thank you for your support!")}
-          className="ml-2 flex cursor-pointer items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-95 shadow-lg"
+          className="ml-2 hidden md:flex cursor-pointer items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-95 shadow-lg"
         >
           Support Us <Heart size={14} fill="currentColor" />
         </button>
