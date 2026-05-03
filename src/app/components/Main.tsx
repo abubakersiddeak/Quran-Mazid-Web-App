@@ -1,63 +1,105 @@
+import { MainProps } from "@/types/Interface";
+import { Ayah } from "@/types/typeLib";
 import { Bookmark, MoreHorizontal, Play } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-export default function Main() {
+export default function Main({ activeSurah }: MainProps) {
+  const [ayahs, setAyahs] = useState<Ayah[]>([]);
+  const [surahInfo, setSurahInfo] = useState<any>(null);
+
+  useEffect(() => {
+    if (!activeSurah) return;
+
+    const fetchAyah = async () => {
+      // আরবী এবং ইংরেজি অনুবাদ একসাথে পাওয়ার জন্য editions ব্যবহার করা ভালো
+      const res = await fetch(
+        `https://api.alquran.cloud/v1/surah/${activeSurah}/editions/quran-simple,en.asad`,
+      );
+
+      const json = await res.json();
+      // json.data[0] হলো আরবী এবং [1] হলো ইংরেজি
+      setAyahs(json.data[0].ayahs);
+      setSurahInfo(json.data[0]);
+    };
+
+    fetchAyah();
+  }, [activeSurah]);
+
   return (
-    <main className="flex-1 overflow-y-auto   p-6 lg:p-10 custom-scrollbar">
+    <main className="flex-1 overflow-y-auto p-4 lg:p-10 custom-scrollbar bg-background">
       <div className="max-w-4xl mx-auto">
-        {/* Surah Header Card */}
-        <div className="  mb-10 grid grid-cols-3 justify-between items-center text-center  relative overflow-hidden ">
+        {/* HEADER - Mobile Friendly */}
+        <div className="mb-10 flex flex-col md:grid md:grid-cols-3 items-center text-center gap-4 relative">
           <Image
-            src={"/mosque_89014.png"}
-            alt="madina iamge"
-            height={100}
-            width={100}
+            src="/mosque_89014.png"
+            alt="madina"
+            height={80}
+            width={80}
+            className="md:h-[100px] md:w-[100px]"
           />
+
           <div>
-            <h2 className="text-3xl font-bold text-card-foreground mb-2">
-              Surah Al Baqarah
+            <h2 className="text-2xl md:text-3xl font-bold">
+              Surah {surahInfo?.englishName || "Select Surah"}
             </h2>
-            <p className="text-muted-foreground text-sm mb-6">
-              Ayah-286, Madinah
+            <p className="text-muted-foreground text-sm">
+              Ayah - {ayahs.length}, {surahInfo?.revelationType}
             </p>
           </div>
 
-          <div className="text-4xl text-primary mb-2">﷽</div>
+          <div className="text-3xl md:text-4xl text-primary font-arabic">﷽</div>
         </div>
 
-        {/* Ayah Row */}
-        {[1, 2].map((ayah) => (
-          <div key={ayah} className="mb-12 border-b border-border pb-10">
-            <div className="flex gap-6">
-              <div className="flex flex-col items-center gap-4 text-muted-foreground pt-2">
-                <span className="text-primary font-bold text-lg">2:{ayah}</span>
-                <Play
-                  size={18}
-                  className="cursor-pointer hover:text-foreground"
-                />
-                <Bookmark
-                  size={18}
-                  className="cursor-pointer hover:text-foreground"
-                />
-                <MoreHorizontal
-                  size={18}
-                  className="cursor-pointer hover:text-foreground"
-                />
+        {/* AYAH LIST */}
+        {ayahs.map((ayah, index) => (
+          <div
+            key={ayah.number}
+            className="mb-8 md:mb-12 border-b border-border pb-6 md:pb-10"
+          >
+            {/* Mobile: Column, Desktop: Row */}
+            <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+              {/* ACTION ICONS - Fixed for Mobile */}
+              <div className="flex flex-row md:flex-col items-center justify-between md:justify-start gap-4 text-muted-foreground pt-0 md:pt-2 border-b md:border-none pb-2 md:pb-0">
+                <span className="text-primary font-bold text-base md:text-lg">
+                  {activeSurah}:{ayah.numberInSurah}
+                </span>
+
+                <div className="flex md:flex-col gap-4">
+                  <Play
+                    size={18}
+                    className="cursor-pointer hover:text-primary transition-colors"
+                  />
+                  <Bookmark
+                    size={18}
+                    className="cursor-pointer hover:text-primary transition-colors"
+                  />
+                  <MoreHorizontal
+                    size={18}
+                    className="cursor-pointer hover:text-primary transition-colors"
+                  />
+                </div>
               </div>
+
+              {/* CONTENT */}
               <div className="flex-1">
-                <div className="text-right text-3xl leading-[3.5rem] mb-6 text-foreground font-arabic rtl">
-                  {ayah === 1
-                    ? "الٓمٓ"
-                    : "ذَٰلِكَ ٱلْكِتَٰبُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ"}
+                {/* ARABIC - Larger on Mobile */}
+                <div
+                  className="text-right text-2xl md:text-3xl leading-[3rem] md:leading-[4rem] mb-6 font-arabic"
+                  dir="rtl"
+                >
+                  {ayah.text}
                 </div>
-                <div className="text-muted-foreground text-[10px] uppercase mb-2 tracking-widest">
-                  Saheeh International
+
+                {/* LABEL */}
+                <div className="text-primary/70 text-[9px] md:text-[10px] uppercase mb-2 tracking-widest font-semibold">
+                  Muhammad Asad (Translation)
                 </div>
-                <div className="text-muted-foreground text-lg leading-relaxed">
-                  {ayah === 1
-                    ? "Alif, Lam, Meem."
-                    : "This is the Book about which there is no doubt, a guidance for those conscious of Allah -"}
+
+                {/* TRANSLATION */}
+                <div className="text-muted-foreground text-base md:text-lg leading-relaxed italic">
+                  {/* আপনি যদি অনুবাদ ডাটা লোড করেন তবে সেটি এখানে বসবে */}
+                  The translation text will appear here.
                 </div>
               </div>
             </div>

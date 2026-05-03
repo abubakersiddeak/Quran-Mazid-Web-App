@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export interface ChildComponentProps {
   handleBurgarClick: () => void;
 
@@ -6,4 +8,9 @@ export interface ChildComponentProps {
 }
 export interface SurahListSidebarProps {
   openSurahList: boolean;
+  activeSurah: number | null;
+  setActiveSurah: Dispatch<SetStateAction<number | null>>;
 }
+export type MainProps = {
+  activeSurah: number | null;
+};

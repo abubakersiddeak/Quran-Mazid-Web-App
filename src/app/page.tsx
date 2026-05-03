@@ -7,6 +7,8 @@ import Main from "./components/Main";
 import { useState } from "react";
 export default function Home() {
   const [openSurahList, setOpenSurahList] = useState(false);
+  const [activeSurah, setActiveSurah] = useState<number | null>(null);
+
   const handleBurgarClick = () => {
     console.log("Burger Menu Clicked!");
     setOpenSurahList(!openSurahList);
@@ -17,8 +19,12 @@ export default function Home() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header handleBurgarClick={handleBurgarClick} />
         <div className="flex flex-1 overflow-hidden">
-          <SurahListSidebar openSurahList={openSurahList} />
-          <Main />
+          <SurahListSidebar
+            openSurahList={openSurahList}
+            activeSurah={activeSurah}
+            setActiveSurah={setActiveSurah}
+          />
+          <Main activeSurah={activeSurah} />
         </div>
         <Footer />
       </div>
