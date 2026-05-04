@@ -60,7 +60,7 @@ export default function SettingsSidebar() {
 
           <button
             onClick={() => setIsSettingsOpen(false)}
-            className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-full transition-colors cursor-pointer"
+            className="p-2 hover:bg-zinc-100 cursor-pointer dark:hover:bg-zinc-900 rounded-full transition-colors cursor-pointer"
           >
             <X size={20} className="dark:text-zinc-400" />
           </button>

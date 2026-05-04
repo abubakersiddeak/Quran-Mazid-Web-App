@@ -1,8 +1,13 @@
 import { Bookmark, House, Blocks, Book } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 export default function LeftSidebar() {
+  const handleNotDeveloped = () => {
+    alert("This feature is not developed yet");
+  };
+
   return (
     <aside className="w-16 border-r border-border flex-col items-center justify-center py-6 gap-8 hidden md:flex bg-sidebar">
       <div className="absolute top-2 cursor-pointer">
@@ -10,7 +15,8 @@ export default function LeftSidebar() {
       </div>
 
       <div className="flex flex-col gap-6 items-center text-muted-foreground cursor-pointer">
-        <button
+        <Link
+          href="/"
           title="Home"
           className="p-2 cursor-pointer rounded-lg transition-all duration-300 text-muted-foreground hover:text-primary hover:bg-accent hover:shadow-[0_0_15px_hsl(var(--primary))] group"
         >
@@ -25,8 +31,9 @@ export default function LeftSidebar() {
           >
             Home
           </span>
-        </button>
+        </Link>
         <button
+          onClick={handleNotDeveloped}
           title="Read Quran"
           className="p-2 cursor-pointer rounded-lg transition-all duration-300 text-muted-foreground hover:text-primary hover:bg-accent hover:shadow-[0_0_15px_hsl(var(--primary))] group"
         >
@@ -40,6 +47,7 @@ export default function LeftSidebar() {
           </span>
         </button>
         <button
+          onClick={handleNotDeveloped}
           title="Bookmark"
           className="p-2 cursor-pointer rounded-lg transition-all duration-300 text-muted-foreground hover:text-primary hover:bg-accent hover:shadow-[0_0_15px_hsl(var(--primary))] group"
         >
@@ -52,7 +60,10 @@ export default function LeftSidebar() {
             Bookmark
           </span>
         </button>
-        <button className="p-2 cursor-pointer rounded-lg transition-all duration-300 text-muted-foreground hover:text-primary hover:bg-accent hover:shadow-[0_0_15px_hsl(var(--primary))] group">
+        <button 
+          onClick={handleNotDeveloped}
+          className="p-2 cursor-pointer rounded-lg transition-all duration-300 text-muted-foreground hover:text-primary hover:bg-accent hover:shadow-[0_0_15px_hsl(var(--primary))] group"
+        >
           <Blocks size={20} />
           <span
             className="absolute left-17 -translate-x-1/2 

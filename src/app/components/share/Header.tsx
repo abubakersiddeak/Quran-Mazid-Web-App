@@ -17,7 +17,7 @@ const IconButton = ({
     onClick={onClick}
     aria-label={label}
     className="
-      group relative flex h-9 w-9 items-center justify-center
+      group relative cursor-pointer flex h-9 w-9 items-center justify-center
       rounded-full border border-border bg-card
       transition-all duration-300
       hover:border-primary hover:bg-accent
@@ -40,19 +40,18 @@ const IconButton = ({
   </button>
 );
 
-export default function Header({ handleBurgarClick }: HeaderProps) {
+export default function Header({
+  handleBurgarClick,
+  handleSearchClick,
+}: HeaderProps) {
   const { setIsSettingsOpen } = useFont();
-
-  const handleSearch = () => {
-    alert("Search Clicked");
-  };
 
   const handleSettings = () => {
     setIsSettingsOpen(true);
   };
 
   const NAV_ITEMS = [
-    { icon: Search, label: "Search", action: handleSearch },
+    { icon: Search, label: "Search", action: handleSearchClick },
     { icon: Settings, label: "Settings", action: handleSettings },
   ];
 
@@ -92,7 +91,7 @@ export default function Header({ handleBurgarClick }: HeaderProps) {
         <button
           onClick={() => alert("Thank you for your support!")}
           className="
-            ml-2 hidden md:flex items-center gap-2
+            ml-2 hidden md:flex cursor-pointer items-center gap-2
             rounded-full bg-primary px-4 py-2 text-xs font-bold
             text-primary-foreground transition-all
             hover:bg-primary/90 active:scale-95

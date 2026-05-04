@@ -1,16 +1,30 @@
 import { AyahWithAudio } from "./audio";
 import { Surah, Ayah } from "./typeLib";
+
 export type MainProps = {
   activeSurah: number | null;
+  ayahs: AyahWithAudio[];
+  surahInfo: {
+    number: number;
+    name: string;
+    englishName: string;
+    englishNameTranslation: string;
+    numberOfAyahs: number;
+    revelationType: string;
+  } | null;
 };
+
 export interface HeaderProps {
   handleBurgarClick: () => void;
+  handleSearchClick: () => void;
 }
+
 export interface SurahListSidebarProps {
   openSurahList: boolean;
   activeSurah: number | null;
-  setActiveSurah: (surah: number) => void;
+  allSurahs: Surah[];
 }
+
 export interface ChildComponentProps {
   handleBurgarClick: () => void;
   /**
@@ -21,23 +35,4 @@ export interface ChildComponentProps {
   handleSearchSelect: (type: "surah" | "ayah", data: Surah | Ayah) => void;
   onUserUpdate?: (name: string, id: number) => void;
   onCancel?: () => void;
-}
-export interface PageProps {
-  activeSurah: number | null;
-  setActiveSurah: (surah: number | null) => void;
-  openSurahList: boolean;
-  setOpenSurahList: (open: boolean) => void;
-}
-export interface UseQuranDataReturn {
-  ayahs: AyahWithAudio[];
-  surahInfo: {
-    number: number;
-    name: string;
-    englishName: string;
-    englishNameTranslation: string;
-    numberOfAyahs: number;
-    revelationType: string;
-  } | null;
-  loading: boolean;
-  error: string | null;
 }

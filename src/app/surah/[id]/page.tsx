@@ -1,8 +1,20 @@
 import { getAllSurahs, getSurahData } from "@/lib/quran";
 import SurahLayout from "@/app/components/SurahLayout";
 
-export default async function Home() {
-  const surahNumber = 1;
+export async function generateStaticParams() {
+  const surahs = await getAllSurahs();
+  return surahs.map((surah) => ({
+    id: surah.number.toString(),
+  }));
+}
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function SurahPage({ params }: PageProps) {
+  const { id } = await params;
+  const surahNumber = parseInt(id);
   
   const [allSurahs, surahData] = await Promise.all([
     getAllSurahs(),

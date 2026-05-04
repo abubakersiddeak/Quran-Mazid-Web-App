@@ -45,7 +45,10 @@ export default function Footer() {
       {/*control Buttons */}
       <div className="flex flex-col items-center gap-1 flex-1 max-w-md mx-auto">
         <div className="flex items-center gap-8">
-          <button className="text-muted-foreground hover:text-foreground cursor-pointer">
+          <button 
+            onClick={() => alert("This feature is not developed yet")}
+            className="text-muted-foreground hover:text-foreground cursor-pointer"
+          >
             <MoreHorizontal size={18} />
           </button>
 

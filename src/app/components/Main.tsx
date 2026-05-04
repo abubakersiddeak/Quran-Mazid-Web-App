@@ -2,7 +2,6 @@
 import { useAudio } from "@/context/AudioContext";
 import { useFont } from "@/context/FontContext";
 import { MainProps } from "@/types/Interface";
-import { useQuranData } from "@/hooks/useQuranData";
 import { useFontFamily } from "@/hooks/useFontFamily";
 import { AyahWithAudio } from "@/types/audio";
 import { Bookmark, MoreHorizontal, Play } from "lucide-react";
@@ -14,10 +13,9 @@ import React, { useMemo, useRef, useEffect } from "react";
  * Fetches data from Al-Quran Cloud API and displays ayahs (verses)
  * Allows users to play audio, bookmark, and customize font sizes
  */
-export default function Main({ activeSurah }: MainProps) {
+export default function Main({ activeSurah, ayahs, surahInfo }: MainProps) {
   const { handlePlay, playingAyah } = useAudio();
   const { arabicSize, translationSize, arabicFont } = useFont();
-  const { ayahs, surahInfo, loading, error } = useQuranData(activeSurah);
   const fontFamilyStyle = useFontFamily(arabicFont);
   const ayahRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
@@ -59,40 +57,6 @@ export default function Main({ activeSurah }: MainProps) {
     );
   }
 
-  // Show loading state
-  if (loading) {
-    return (
-      <main className="flex-1 flex items-center justify-center bg-background">
-        <div className="text-center space-y-3 px-4">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">
-            Loading...
-          </h2>
-          <p className="text-sm text-muted-foreground">Fetching Surah data</p>
-        </div>
-      </main>
-    );
-  }
-
-  // Show error state
-  if (error) {
-    return (
-      <main className="flex-1 flex items-center justify-center bg-background">
-        <div className="text-center space-y-3 px-4">
-          <h2 className="text-xl md:text-2xl font-bold text-destructive">
-            Error Loading Surah
-          </h2>
-          <p className="text-sm text-muted-foreground">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition"
-          >
-            Retry
-          </button>
-        </div>
-      </main>
-    );
-  }
-
   // Show empty state if no ayahs loaded
   if (finalAyahs.length === 0) {
     return (
@@ -127,7 +91,7 @@ export default function Main({ activeSurah }: MainProps) {
               Surah {surahInfo?.englishName || "Select"}
             </h2>
             <p className="text-muted-foreground text-sm">
-              Ayah - {finalAyahs.length}, {surahInfo?.revelationType}
+              Ayah - {ayahs.length}, {surahInfo?.revelationType}
             </p>
           </div>
 
@@ -187,6 +151,10 @@ const AyahItem = React.forwardRef<HTMLDivElement, AyahItemProps>(
     },
     ref,
   ) => {
+    const handleNotDeveloped = () => {
+      alert("This feature is not developed yet");
+    };
+
     return (
       <div
         ref={ref}
@@ -211,10 +179,12 @@ const AyahItem = React.forwardRef<HTMLDivElement, AyahItemProps>(
               />
               <Bookmark
                 size={18}
+                onClick={handleNotDeveloped}
                 className="cursor-pointer hover:text-primary"
               />
               <MoreHorizontal
                 size={18}
+                onClick={handleNotDeveloped}
                 className="cursor-pointer hover:text-primary"
               />
             </div>
