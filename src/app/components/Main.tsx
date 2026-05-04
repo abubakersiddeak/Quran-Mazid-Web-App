@@ -204,20 +204,16 @@ const AyahItem = React.forwardRef<HTMLDivElement, AyahItemProps>(
               {ayah.arabic}
             </div>
 
-            {/* TRANSLATION LABEL */}
-            <div
-              className="text-primary/70 text-[9px] md:text-[10px] uppercase mb-2 tracking-widest font-semibold"
-              style={{ fontSize: `${translationSize}px` }}
-            >
-              Muhammad Asad (Translation)
-            </div>
-
             {/* ENGLISH TRANSLATION */}
             <div
               className="text-muted-foreground text-base md:text-lg leading-relaxed italic"
               style={{ fontSize: `${translationSize}px` }}
             >
               {ayah.translation}
+            </div>
+            {/* TRANSLATION LABEL */}
+            <div className="text-primary/98 text-[8px] md:text-[15px] uppercase mb-2 tracking-widest font-light">
+              Muhammad Asad (Translation)
             </div>
           </div>
         </div>
