@@ -29,7 +29,7 @@ export default function Footer() {
     const secs = Math.floor(time % 60);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
-  console.log(playingAyah);
+
   return (
     <footer className="fixed bottom-0 left-0 right-0 h-20 border-t border-border px-6 flex items-center justify-between bg-background z-50">
       {/* left side info */}

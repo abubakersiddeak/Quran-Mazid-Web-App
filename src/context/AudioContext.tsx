@@ -6,18 +6,28 @@ import React, {
   useRef,
   useEffect,
   useCallback,
+  ReactNode,
 } from "react";
+import { AudioContextValue, AyahWithAudio } from "@/types/audio";
 
-const AudioContext = createContext<any>(null);
+const AudioContext = createContext<AudioContextValue | null>(null);
 
-export const AudioProvider = ({ children }: any) => {
-  const [playingAyah, setPlayingAyah] = useState<any>(null);
-  const [ayahList, setAyahList] = useState<any[]>([]);
+interface AudioProviderProps {
+  children: ReactNode;
+}
+
+export const AudioProvider = ({ children }: AudioProviderProps) => {
+  const [playingAyah, setPlayingAyah] =
+    useState<AudioContextValue["playingAyah"]>(null);
+  const [ayahList, setAyahList] = useState<AyahWithAudio[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
+  /**
+   * Updates current time and duration from audio element
+   */
   const handleTimeUpdate = useCallback(() => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
@@ -25,8 +35,13 @@ export const AudioProvider = ({ children }: any) => {
     }
   }, []);
 
+  /**
+   * Plays or pauses audio for a given ayah
+   * If already playing the same ayah, toggles play/pause
+   * Otherwise loads and plays the new ayah
+   */
   const handlePlay = useCallback(
-    (ayah: any, surahEnName: any, list: any[]) => {
+    (ayah: AyahWithAudio, surahEnName: string, list: AyahWithAudio[]) => {
       if (!ayah?.audio) return;
 
       if (list && list.length > 0) setAyahList(list);
@@ -55,7 +70,7 @@ export const AudioProvider = ({ children }: any) => {
 
       const ayahWithSurahInfo = {
         ...ayah,
-        enName: surahEnName || playingAyah?.enName,
+        enName: surahEnName || playingAyah?.enName || "",
       };
 
       setPlayingAyah(ayahWithSurahInfo);
@@ -65,28 +80,37 @@ export const AudioProvider = ({ children }: any) => {
     [playingAyah, isPlaying, handleTimeUpdate],
   );
 
+  /**
+   * Plays the next ayah in the list
+   */
   const handleNext = useCallback(() => {
     const currentIndex = ayahList.findIndex(
       (a) => a.number === playingAyah?.number,
     );
     const next = ayahList[currentIndex + 1];
-    if (next) {
-      handlePlay(next, playingAyah?.enName, ayahList);
+    if (next && playingAyah) {
+      handlePlay(next, playingAyah.enName, ayahList);
     } else {
       setIsPlaying(false);
     }
   }, [ayahList, playingAyah, handlePlay]);
 
+  /**
+   * Plays the previous ayah in the list
+   */
   const handlePrev = useCallback(() => {
     const currentIndex = ayahList.findIndex(
       (a) => a.number === playingAyah?.number,
     );
     const prev = ayahList[currentIndex - 1];
-    if (prev) {
-      handlePlay(prev, playingAyah?.enName, ayahList);
+    if (prev && playingAyah) {
+      handlePlay(prev, playingAyah.enName, ayahList);
     }
   }, [ayahList, playingAyah, handlePlay]);
 
+  /**
+   * Toggles play/pause for the current audio
+   */
   const togglePlayPause = useCallback(() => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -97,6 +121,9 @@ export const AudioProvider = ({ children }: any) => {
     setIsPlaying(!isPlaying);
   }, [isPlaying]);
 
+  /**
+   * Stops audio and resets all playback state
+   */
   const stopAudio = useCallback(() => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -107,6 +134,9 @@ export const AudioProvider = ({ children }: any) => {
     setCurrentTime(0);
   }, []);
 
+  /**
+   * Seeks to a specific time in the current audio
+   */
   const seek = useCallback((time: number) => {
     if (audioRef.current) {
       audioRef.current.currentTime = time;
@@ -146,4 +176,10 @@ export const AudioProvider = ({ children }: any) => {
   );
 };
 
-export const useAudio = () => useContext(AudioContext);
+export const useAudio = (): AudioContextValue => {
+  const context = useContext(AudioContext);
+  if (!context) {
+    throw new Error("useAudio must be used within AudioProvider");
+  }
+  return context;
+};

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useFont } from "@/context/FontContext";
+import { ArabicFontType } from "@/types/context";
 import { X, Settings, Type, ChevronRight } from "lucide-react";
 
 export default function SettingsSidebar() {
@@ -17,7 +18,14 @@ export default function SettingsSidebar() {
 
   const [fontOpen, setFontOpen] = useState(false);
 
-  const fontOptions = [
+  /**
+   * Available Arabic font options with descriptions
+   */
+  const fontOptions: Array<{
+    value: ArabicFontType;
+    label: string;
+    desc: string;
+  }> = [
     { value: "KFGQ", label: "KFGQ (Meem)", desc: "Uthmanic Script Style" },
     {
       value: "Amiri",

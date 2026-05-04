@@ -1,110 +1,130 @@
+"use client";
 import { useAudio } from "@/context/AudioContext";
 import { useFont } from "@/context/FontContext";
 import { MainProps } from "@/types/Interface";
+import { useQuranData } from "@/hooks/useQuranData";
+import { useFontFamily } from "@/hooks/useFontFamily";
+import { AyahWithAudio } from "@/types/audio";
 import { Bookmark, MoreHorizontal, Play } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useMemo, useRef, useEffect } from "react";
 
+/**
+ * Main component displays Quranic text with translations and audio
+ * Fetches data from Al-Quran Cloud API and displays ayahs (verses)
+ * Allows users to play audio, bookmark, and customize font sizes
+ */
 export default function Main({ activeSurah }: MainProps) {
-  const [ayahs, setAyahs] = useState<any[]>([]);
-  const [surahInfo, setSurahInfo] = useState<any>(null);
-  const [audioAyahs, setAudioAyahs] = useState<any[]>([]);
   const { handlePlay, playingAyah } = useAudio();
   const { arabicSize, translationSize, arabicFont } = useFont();
+  const { ayahs, surahInfo, loading, error } = useQuranData(activeSurah);
+  const fontFamilyStyle = useFontFamily(arabicFont);
   const ayahRefs = useRef<Record<number, HTMLDivElement | null>>({});
-  // 1st API → TEXT + TRANSLATION
-  useEffect(() => {
-    if (!activeSurah) return;
 
-    const fetchText = async () => {
-      const res = await fetch(
-        `https://api.alquran.cloud/v1/surah/${activeSurah}/editions/quran-simple,en.asad`,
-      );
-      const json = await res.json();
-
-      const arabic = json.data[0];
-      const english = json.data[1];
-
-      const mergedText = arabic.ayahs.map((a: any, i: number) => ({
-        number: a.number,
-        numberInSurah: a.numberInSurah,
-        arabic: a.text,
-        translation: english.ayahs[i].text,
-      }));
-
-      setAyahs(mergedText);
-      setSurahInfo(arabic);
-    };
-
-    fetchText();
-  }, [activeSurah]);
-
-  // 2nd API → AUDIO ONLY
-  useEffect(() => {
-    if (!activeSurah) return;
-
-    const fetchAudio = async () => {
-      const res = await fetch(
-        `https://api.alquran.cloud/v1/surah/${activeSurah}/ar.alafasy`,
-      );
-      const json = await res.json();
-
-      setAudioAyahs(json.data.ayahs);
-    };
-
-    fetchAudio();
-  }, [activeSurah]);
-
-  //  FINAL MERGE (text + audio)
-  const finalAyahs = ayahs.map((a) => {
-    const audioMatch = audioAyahs.find((audio) => audio.number === a.number);
-
-    return {
-      ...a,
-      audio: audioMatch?.audio,
-    };
-  });
+  /**
+   * Auto-scroll to currently playing ayah
+   */
   useEffect(() => {
     if (!playingAyah?.number) return;
 
     const el = ayahRefs.current[playingAyah.number];
-
     if (el) {
       el.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
     }
-  }, [playingAyah]);
-  const surahEnName = surahInfo?.englishName;
-  const getFontFamily = (fontName: string) => {
-    switch (fontName) {
-      case "Amiri":
-        return "'Amiri', serif";
-      case "Scheherazade":
-        return "'Scheherazade New', serif";
-      case "KFGQ":
-        return "'KFGQPC', serif";
-      default:
-        return "'KFGQPC', serif";
-    }
-  };
+  }, [playingAyah?.number]);
+
+  /**
+   * Memoize the final ayahs to avoid recalculation on every render
+   * Only recalculates if ayahs change
+   */
+  const finalAyahs = useMemo(() => ayahs, [ayahs]);
+
+  // Show placeholder when no surah is selected
+  if (!activeSurah) {
+    return (
+      <main className="flex-1 flex items-center justify-center bg-background">
+        <div className="text-center space-y-3 px-4">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">
+            No Surah Selected
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Please select a Surah from the list to start reading
+          </p>
+          <div className="text-4xl">📖</div>
+        </div>
+      </main>
+    );
+  }
+
+  // Show loading state
+  if (loading) {
+    return (
+      <main className="flex-1 flex items-center justify-center bg-background">
+        <div className="text-center space-y-3 px-4">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">
+            Loading...
+          </h2>
+          <p className="text-sm text-muted-foreground">Fetching Surah data</p>
+        </div>
+      </main>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <main className="flex-1 flex items-center justify-center bg-background">
+        <div className="text-center space-y-3 px-4">
+          <h2 className="text-xl md:text-2xl font-bold text-destructive">
+            Error Loading Surah
+          </h2>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition"
+          >
+            Retry
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // Show empty state if no ayahs loaded
+  if (finalAyahs.length === 0) {
+    return (
+      <main className="flex-1 flex items-center justify-center bg-background">
+        <div className="text-center space-y-3 px-4">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">
+            No Ayahs Found
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Unable to load verses for this Surah
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="flex-1 overflow-y-auto p-4 lg:p-0 lg:pt-4 custom-scrollbar bg-background">
-      <div className=" mx-auto">
-        {/* HEADER */}
+      <div className="mx-auto">
+        {/* SURAH HEADER */}
         <div className="mb-10 px-4 lg:px-6 flex flex-col md:grid md:grid-cols-3 items-center text-center gap-4">
           <Image
             src="/mosque_89014.png"
             alt="madina"
             height={80}
             width={80}
-            className="md:h-30 md:w-37.5"
+            className="md:h-30 md:w-35"
           />
 
           <div>
             <h2 className="text-2xl md:text-3xl font-bold">
-              Surah {surahInfo?.englishName || "Select Surah"}
+              Surah {surahInfo?.englishName || "Select"}
             </h2>
             <p className="text-muted-foreground text-sm">
               Ayah - {finalAyahs.length}, {surahInfo?.revelationType}
@@ -116,76 +136,124 @@ export default function Main({ activeSurah }: MainProps) {
           </div>
         </div>
 
-        {/* AYAH LIST */}
-        {finalAyahs.map((ayah) => (
-          <div
-            key={ayah.number}
-            ref={(el) => {
-              ayahRefs.current[ayah.number] = el;
-            }}
-            className={`mb-8 px-4 lg:px-6 md:mb-12 border-b border-border pb-6 md:pb-10 transition ${
-              playingAyah?.number === ayah.number ? "bg-height p-4" : ""
-            }`}
-          >
-            <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-              {/* ACTIONS */}
-              <div className="flex flex-row md:flex-col items-center justify-between md:justify-start gap-4 text-muted-foreground border-b md:border-none pb-2 md:pb-0">
-                <span className="text-primary font-bold text-base md:text-lg">
-                  {activeSurah}:{ayah.numberInSurah}
-                </span>
-
-                <div className="flex md:flex-col gap-4">
-                  <Play
-                    size={18}
-                    onClick={() => handlePlay(ayah, surahEnName, finalAyahs)}
-                    className={`cursor-pointer transition ${
-                      playingAyah?.number === ayah.number
-                        ? "text-green-500 scale-110"
-                        : "hover:text-primary"
-                    }`}
-                  />
-                  <Bookmark
-                    size={18}
-                    className="cursor-pointer hover:text-primary"
-                  />
-                  <MoreHorizontal
-                    size={18}
-                    className="cursor-pointer hover:text-primary"
-                  />
-                </div>
-              </div>
-
-              {/* CONTENT */}
-              <div className="flex-1">
-                <div
-                  className="text-right text-2xl md:text-3xl leading-12 md:leading-16 mb-6 quran-text"
-                  style={{
-                    fontSize: `${arabicSize}px`,
-                    fontFamily: getFontFamily(arabicFont),
-                  }}
-                  dir="rtl"
-                >
-                  {ayah.arabic}
-                </div>
-
-                <div
-                  className="text-primary/70 text-[9px] md:text-[10px] uppercase mb-2 tracking-widest font-semibold"
-                  style={{ fontSize: `${translationSize}px` }}
-                >
-                  Muhammad Asad (Translation)
-                </div>
-
-                <div
-                  className="text-muted-foreground text-base md:text-lg leading-relaxed italic"
-                  style={{ fontSize: `${translationSize}px` }}
-                >
-                  {ayah.translation}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+        {/* AYAHS LIST */}
+        <div className="space-y-0">
+          {finalAyahs.map((ayah: AyahWithAudio) => (
+            <AyahItem
+              key={ayah.number}
+              ayah={ayah}
+              activeSurah={activeSurah}
+              isPlaying={playingAyah?.number === ayah.number}
+              onPlay={() =>
+                handlePlay(ayah, surahInfo?.englishName || "", finalAyahs)
+              }
+              arabicSize={arabicSize}
+              arabicFontFamily={fontFamilyStyle}
+              translationSize={translationSize}
+              ref={(el) => {
+                ayahRefs.current[ayah.number] = el;
+              }}
+            />
+          ))}
+        </div>
       </div>
     </main>
   );
 }
+
+/**
+ * AyahItem component - displays a single verse with actions
+ */
+interface AyahItemProps {
+  ayah: AyahWithAudio;
+  activeSurah: number;
+  isPlaying: boolean;
+  onPlay: () => void;
+  arabicSize: number;
+  arabicFontFamily: string;
+  translationSize: number;
+}
+
+const AyahItem = React.forwardRef<HTMLDivElement, AyahItemProps>(
+  (
+    {
+      ayah,
+      activeSurah,
+      isPlaying,
+      onPlay,
+      arabicSize,
+      arabicFontFamily,
+      translationSize,
+    },
+    ref,
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={`mb-8 px-4 lg:px-6 md:mb-12 border-b border-border pb-6 md:pb-10 transition ${
+          isPlaying ? "bg-height p-4" : ""
+        }`}
+      >
+        <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+          {/* AYAH ACTIONS */}
+          <div className="flex flex-row md:flex-col items-center justify-between md:justify-start gap-4 text-muted-foreground border-b md:border-none pb-2 md:pb-0">
+            <span className="text-primary font-bold text-base md:text-lg">
+              {activeSurah}:{ayah.numberInSurah}
+            </span>
+
+            <div className="flex md:flex-col gap-4">
+              <Play
+                size={18}
+                onClick={onPlay}
+                className={`cursor-pointer transition ${
+                  isPlaying ? "text-green-500 scale-110" : "hover:text-primary"
+                }`}
+              />
+              <Bookmark
+                size={18}
+                className="cursor-pointer hover:text-primary"
+              />
+              <MoreHorizontal
+                size={18}
+                className="cursor-pointer hover:text-primary"
+              />
+            </div>
+          </div>
+
+          {/* AYAH CONTENT */}
+          <div className="flex-1">
+            {/* ARABIC TEXT */}
+            <div
+              className="text-right text-2xl md:text-3xl leading-12 md:leading-16 mb-6 quran-text"
+              style={{
+                fontSize: `${arabicSize}px`,
+                fontFamily: arabicFontFamily,
+              }}
+              dir="rtl"
+            >
+              {ayah.arabic}
+            </div>
+
+            {/* TRANSLATION LABEL */}
+            <div
+              className="text-primary/70 text-[9px] md:text-[10px] uppercase mb-2 tracking-widest font-semibold"
+              style={{ fontSize: `${translationSize}px` }}
+            >
+              Muhammad Asad (Translation)
+            </div>
+
+            {/* ENGLISH TRANSLATION */}
+            <div
+              className="text-muted-foreground text-base md:text-lg leading-relaxed italic"
+              style={{ fontSize: `${translationSize}px` }}
+            >
+              {ayah.translation}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  },
+);
+
+AyahItem.displayName = "AyahItem";

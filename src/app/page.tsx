@@ -10,7 +10,6 @@ export default function Home() {
   const [activeSurah, setActiveSurah] = useState<number | null>(null);
 
   const handleBurgarClick = () => {
-    console.log("Burger Menu Clicked!");
     setOpenSurahList(!openSurahList);
   };
   return (

@@ -1,7 +1,7 @@
 "use client";
 import { Heart, Search, Settings, LucideIcon, Menu } from "lucide-react";
 import { ModeToggle } from "../ModeToggle";
-import { ChildComponentProps } from "@/types/Interface";
+import { HeaderProps } from "@/types/Interface";
 import { useFont } from "@/context/FontContext";
 
 const IconButton = ({
@@ -40,7 +40,7 @@ const IconButton = ({
   </button>
 );
 
-export default function Header({ handleBurgarClick }: ChildComponentProps) {
+export default function Header({ handleBurgarClick }: HeaderProps) {
   const { setIsSettingsOpen } = useFont();
 
   const handleSearch = () => {

@@ -20,7 +20,6 @@ export default function SurahListSidebar({
     };
     fetchAllSurah();
   }, []);
-  console.log(allSurahData);
   return (
     <section
       className={clsx(
