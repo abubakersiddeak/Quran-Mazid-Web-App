@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 export default function Main({ activeSurah }: MainProps) {
   const [ayahs, setAyahs] = useState<Ayah[]>([]);
   const [surahInfo, setSurahInfo] = useState<any>(null);
+  const [audio, setAudio] = useState<any>(null);
 
   useEffect(() => {
     if (!activeSurah) return;
@@ -25,7 +26,22 @@ export default function Main({ activeSurah }: MainProps) {
 
     fetchAyah();
   }, [activeSurah]);
+  useEffect(() => {
+    if (!activeSurah) return;
 
+    const fetchAyah = async () => {
+      const res = await fetch(
+        `https://api.alquran.cloud/v1/surah/${activeSurah}/editions/ar.alafasy,en.asad`,
+      );
+
+      const json = await res.json();
+
+      setAudio(json.data);
+    };
+
+    fetchAyah();
+  }, [activeSurah]);
+  console.log(audio, "audio");
   return (
     <main className="flex-1 overflow-y-auto p-4 lg:p-10 custom-scrollbar bg-background">
       <div className="max-w-4xl mx-auto">
@@ -36,7 +52,7 @@ export default function Main({ activeSurah }: MainProps) {
             alt="madina"
             height={80}
             width={80}
-            className="md:h-[100px] md:w-[100px]"
+            className="md:h-30 md:w-37.5"
           />
 
           <div>
@@ -48,11 +64,13 @@ export default function Main({ activeSurah }: MainProps) {
             </p>
           </div>
 
-          <div className="text-3xl md:text-4xl text-primary font-arabic">﷽</div>
+          <div className="text-3xl md:text-4xl text-primary quran-text">
+            {surahInfo?.name}
+          </div>
         </div>
 
         {/* AYAH LIST */}
-        {ayahs.map((ayah, index) => (
+        {ayahs.map((ayah) => (
           <div
             key={ayah.number}
             className="mb-8 md:mb-12 border-b border-border pb-6 md:pb-10"
@@ -85,7 +103,7 @@ export default function Main({ activeSurah }: MainProps) {
               <div className="flex-1">
                 {/* ARABIC - Larger on Mobile */}
                 <div
-                  className="text-right text-2xl md:text-3xl leading-[3rem] md:leading-[4rem] mb-6 font-arabic"
+                  className="text-right text-2xl md:text-3xl leading-[3rem] md:leading-[4rem] mb-6 quran-text"
                   dir="rtl"
                 >
                   {ayah.text}

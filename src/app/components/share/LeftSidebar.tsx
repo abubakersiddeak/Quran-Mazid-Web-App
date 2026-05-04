@@ -4,7 +4,7 @@ import React from "react";
 
 export default function LeftSidebar() {
   return (
-    <aside className="w-16 border-r border-border flex-col items-center justify-center py-6 gap-8 hidden md:flex bg-background">
+    <aside className="w-16 border-r border-border flex-col items-center justify-center py-6 gap-8 hidden md:flex bg-sidebar">
       <div className="absolute top-2 cursor-pointer">
         <Image src={"/mainicon.png"} height={40} width={40} alt="Icon" />
       </div>
