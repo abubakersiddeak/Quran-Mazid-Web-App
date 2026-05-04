@@ -13,4 +13,5 @@ export interface SurahListSidebarProps {
 }
 export type MainProps = {
   activeSurah: number | null;
+  setActiveSurah: number | null;
 };
