@@ -29,10 +29,8 @@ export const AudioProvider = ({ children }: any) => {
     (ayah: any, surahEnName: any, list: any[]) => {
       if (!ayah?.audio) return;
 
-      // ১. লিস্ট আপডেট করুন
       if (list && list.length > 0) setAyahList(list);
 
-      // ২. যদি একই আয়াত হয় তবে প্লে/পজ করুন
       if (playingAyah?.number === ayah.number && audioRef.current) {
         if (isPlaying) {
           audioRef.current.pause();
@@ -44,20 +42,17 @@ export const AudioProvider = ({ children }: any) => {
         return;
       }
 
-      // ৩. আগের অডিও পরিষ্কার করুন
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.removeEventListener("timeupdate", handleTimeUpdate);
-        audioRef.current.src = ""; // মেমোরি ক্লিয়ার করার জন্য
+        audioRef.current.src = "";
       }
 
-      // ৪. নতুন অডিও সেটআপ
       const audio = new Audio(ayah.audio);
       audioRef.current = audio;
       audio.addEventListener("timeupdate", handleTimeUpdate);
       audio.addEventListener("loadedmetadata", handleTimeUpdate);
 
-      // ৫. অবজেক্ট মিউটেট না করে নতুন একটি অবজেক্ট তৈরি করুন (খুবই গুরুত্বপূর্ণ)
       const ayahWithSurahInfo = {
         ...ayah,
         enName: surahEnName || playingAyah?.enName,
@@ -76,7 +71,6 @@ export const AudioProvider = ({ children }: any) => {
     );
     const next = ayahList[currentIndex + 1];
     if (next) {
-      // ৩টি আর্গুমেন্টই পাস করা হচ্ছে: (আয়াত, সুরার নাম, আয়াতের লিস্ট)
       handlePlay(next, playingAyah?.enName, ayahList);
     } else {
       setIsPlaying(false);
@@ -89,7 +83,6 @@ export const AudioProvider = ({ children }: any) => {
     );
     const prev = ayahList[currentIndex - 1];
     if (prev) {
-      // ৩টি আর্গুমেন্টই পাস করা হচ্ছে: (আয়াত, সুরার নাম, আয়াতের লিস্ট)
       handlePlay(prev, playingAyah?.enName, ayahList);
     }
   }, [ayahList, playingAyah, handlePlay]);

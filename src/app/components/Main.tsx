@@ -1,4 +1,5 @@
 import { useAudio } from "@/context/AudioContext";
+import { useFont } from "@/context/FontContext";
 import { MainProps } from "@/types/Interface";
 import { Bookmark, MoreHorizontal, Play } from "lucide-react";
 import Image from "next/image";
@@ -9,6 +10,7 @@ export default function Main({ activeSurah }: MainProps) {
   const [surahInfo, setSurahInfo] = useState<any>(null);
   const [audioAyahs, setAudioAyahs] = useState<any[]>([]);
   const { handlePlay, playingAyah } = useAudio();
+  const { arabicSize, translationSize, arabicFont } = useFont();
   const ayahRefs = useRef<Record<number, HTMLDivElement | null>>({});
   // 1st API → TEXT + TRANSLATION
   useEffect(() => {
@@ -75,6 +77,18 @@ export default function Main({ activeSurah }: MainProps) {
     }
   }, [playingAyah]);
   const surahEnName = surahInfo?.englishName;
+  const getFontFamily = (fontName: string) => {
+    switch (fontName) {
+      case "Amiri":
+        return "'Amiri', serif";
+      case "Scheherazade":
+        return "'Scheherazade New', serif";
+      case "KFGQ":
+        return "'KFGQPC', serif";
+      default:
+        return "'KFGQPC', serif";
+    }
+  };
   return (
     <main className="flex-1 overflow-y-auto p-4 lg:p-0 lg:pt-4 custom-scrollbar bg-background">
       <div className=" mx-auto">
@@ -144,17 +158,27 @@ export default function Main({ activeSurah }: MainProps) {
               {/* CONTENT */}
               <div className="flex-1">
                 <div
-                  className="text-right text-2xl md:text-3xl leading-[3rem] md:leading-[4rem] mb-6 quran-text"
+                  className="text-right text-2xl md:text-3xl leading-12 md:leading-16 mb-6 quran-text"
+                  style={{
+                    fontSize: `${arabicSize}px`,
+                    fontFamily: getFontFamily(arabicFont),
+                  }}
                   dir="rtl"
                 >
                   {ayah.arabic}
                 </div>
 
-                <div className="text-primary/70 text-[9px] md:text-[10px] uppercase mb-2 tracking-widest font-semibold">
+                <div
+                  className="text-primary/70 text-[9px] md:text-[10px] uppercase mb-2 tracking-widest font-semibold"
+                  style={{ fontSize: `${translationSize}px` }}
+                >
                   Muhammad Asad (Translation)
                 </div>
 
-                <div className="text-muted-foreground text-base md:text-lg leading-relaxed italic">
+                <div
+                  className="text-muted-foreground text-base md:text-lg leading-relaxed italic"
+                  style={{ fontSize: `${translationSize}px` }}
+                >
                   {ayah.translation}
                 </div>
               </div>

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -138,9 +139,8 @@
   font-display: swap;
 }
 .quran-text {
-  font-family: "KFGQPC", serif;
+  font-family: "KFGQPC", "Amiri", "Scheherazade New", serif;
   direction: rtl;
-  font-size: 28px;
-  line-height: 2.2;
   text-align: right;
+  line-height: 2.2;
 }
